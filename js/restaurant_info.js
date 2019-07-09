@@ -15,22 +15,37 @@ initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
-    } else {      
-      self.newMap = L.map('map', {
-        center: [restaurant.latlng.lat, restaurant.latlng.lng],
-        zoom: 16,
-        scrollWheelZoom: false
-      });
-      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
-        mapboxToken: SECRET.mapbox_key,
-        maxZoom: 18,
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-          '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox.streets'    
-      }).addTo(newMap);
-      fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
+    } else {
+      if (navigator.onLine) {
+        try {
+          self.newMap = L.map('map', {
+            center: [restaurant.latlng.lat, restaurant.latlng.lng],
+            zoom: 16,
+            scrollWheelZoom: false
+          });
+          L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
+            mapboxToken: SECRET.mapbox_key,
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+              '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+              'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            id: 'mapbox.streets'    
+          }).addTo(newMap);
+          DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
+        }catch(error){
+          console.log('Map was not found', error);
+          //Unfortunately this function is not working
+          //It sets map as offline if there is an error
+          // DBHelper.mapOff();
+    }
+  }
+    else{
+      //Unfortunately this function is not working
+      //If navigator is not online then it sets the map as offline
+      // DBHelper.mapOff();
+
+    }
+    fillBreadcrumb();   
     }
   });
 }  
@@ -88,6 +103,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img'
+  image.alt = `Picture of ${restaurant.name}`;
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
 
   const cuisine = document.getElementById('restaurant-cuisine');

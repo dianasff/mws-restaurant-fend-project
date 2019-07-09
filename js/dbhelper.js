@@ -153,6 +153,7 @@ class DBHelper {
     return (`/img/${restaurant.photograph}`);
   }
 
+
   /**
    * Map marker for a restaurant.
    */
@@ -176,6 +177,16 @@ class DBHelper {
     );
     return marker;
   } */
+  // For this part of the code i used code provided by the following walkthrough: https://alexandroperez.github.io/mws-walkthrough/
+  //Unfortunately this function is not working
+  static mapOff() {
+    const map = document.getElementById('map');
+    map.className = "map-offline";
+    map.innerHTML = `<div class="warning-icon">!</div>
+    <div class="warning-message">OOps! Maps  isn't loading! </div>
+    <div class="warning-suggestion">Please check your connection!</div>`;
+  }
+  
 
 }
 
